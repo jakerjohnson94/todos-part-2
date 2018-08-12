@@ -7,14 +7,13 @@ const TodoItem = props => (
   <li key={props.id} className={props.completed ? 'completed' : ''}>
     <div className="view">
       <input
-        id={props.id}
         className="toggle"
         onClick={props.handleCheckClick}
         type="checkbox"
         defaultChecked={props.completed}
       />
       <label>{props.title}</label>
-      <button id={props.id} onClick={props.handleDeleteClick} className="destroy" />
+      <button onClick={props.handleDeleteClick} className="destroy" />
     </div>
   </li>
 );
@@ -40,13 +39,14 @@ class TodoList extends Component {
       };
       todos.push(newTodo);
       this.setState({ todos: todos });
+      event.target.value=''
     }
   };
 
-  handleCheckClick = () => event => {
+  handleCheckClick = id => event => {
     let todos = this.state.todos;
     const listElement = event.target.parentElement.parentElement;
-    const id = parseInt(event.target.id);
+
     const todo = todos.find(a => a.id === id);
     todo.completed === true ? (todo.completed = false) : (todo.completed = true);
     listElement.classList.toggle('completed');
@@ -54,15 +54,14 @@ class TodoList extends Component {
     this.setState({ todo: todos });
   };
 
-  handleDeleteClick = () => event => {
+  handleDeleteClick = id => () => {
     let todos = this.state.todos;
-    const id = parseInt(event.target.id);
 
     todos = todos.filter(a => a.id !== id);
 
     this.setState({ todos: todos });
   };
-  handleClearClick = () => () => {
+  handleClearClick = () => {
     let todos = this.state.todos;
     todos = todos.filter(a => !a.completed);
     this.setState({ todos: todos });
@@ -91,8 +90,8 @@ class TodoList extends Component {
                   id={todo.id}
                   title={todo.title}
                   completed={todo.completed}
-                  handleCheckClick={this.handleCheckClick()}
-                  handleDeleteClick={this.handleDeleteClick()}
+                  handleCheckClick={this.handleCheckClick(todo.id)}
+                  handleDeleteClick={this.handleDeleteClick(todo.id)}
                 />
               ))}
             </ul>
@@ -108,7 +107,7 @@ class TodoList extends Component {
             {/* Remove this if you don't implement routing */}
             {/* Hidden if no completed items are left ↓ */}
             {todos.filter(a => a.completed).length ? (
-              <button onClick={this.handleClearClick()} className="clear-completed">
+              <button onClick={this.handleClearClick} className="clear-completed">
                 Clear completed
               </button>
             ) : null}
